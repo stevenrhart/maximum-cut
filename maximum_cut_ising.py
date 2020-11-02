@@ -40,7 +40,7 @@ for i, j in G.edges:
 
 # ------- Run our QUBO on the QPU -------
 # Set up QPU parameters
-chainstrength = 2
+chainstrength = 3
 numruns = 10
 
 # Run the QUBO on the solver from your config file
@@ -56,7 +56,11 @@ for line in response:
     S0 = [k for k,v in line.items() if v == -1]
     S1 = [k for k,v in line.items() if v == 1]
     E = next(energies).energy
-    print('{:>15s}{:>15s}{:^15s}{:^15s}'.format(str(S0),str(S1),str(E),str(int((6-E)/2))))
+    max_cuts = 0
+    for u, v in G.edges:
+        if (u in S0 and v in S1) or (u in S1 and v in S0):
+            max_cuts += 1
+    print('{:>15s}{:>15s}{:^15s}{:^15s}'.format(str(S0),str(S1),str(E),str(max_cuts)))
 
 # ------- Display results to user -------
 # Grab best result
